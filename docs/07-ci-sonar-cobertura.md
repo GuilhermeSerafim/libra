@@ -18,30 +18,39 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - run: mvn -B verify
-      - uses: actions/upload-artifact@v4
+      - name: Run tests and coverage
+        run: mvn -B verify
+      - name: Upload JaCoCo report
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: jacoco-report
           path: target/site/jacoco/
-      - name: Sonar analysis
+          if-no-files-found: error
+      - name: SonarQube analysis
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify sonar:sonar
+        run: mvn -B sonar:sonar
 ```
 
-Esse pipeline faz checkout do codigo, instala Java 21, usa cache do Maven, executa `mvn -B verify`, publica o relatorio de cobertura como artefato mesmo quando a execucao falha e roda a analise SonarQube com `mvn -B verify sonar:sonar`. O token e a URL do SonarQube devem ficar em secrets do GitHub Actions, como `SONAR_TOKEN` e `SONAR_HOST_URL`, nunca no repositorio. Tambem podem ser necessarias configuracoes como chave do projeto e URL do servidor no `pom.xml` ou nas propriedades do Maven. Os testes da Open Library devem rodar com VCR em Java usando WireMock em modo replay, sem depender de internet real durante o CI normal.
+Esse pipeline faz checkout do codigo, instala Java 21, usa cache do Maven, executa `mvn -B verify`, publica o relatorio de cobertura como artefato mesmo quando a execucao falha e depois roda a analise SonarQube com `mvn -B sonar:sonar`. O token e a URL do SonarQube devem ficar em secrets do GitHub Actions, como `SONAR_TOKEN` e `SONAR_HOST_URL`, nunca no repositorio. Tambem podem ser necessarias configuracoes como chave do projeto e URL do servidor no `pom.xml` ou nas propriedades do Maven. Os testes da Open Library devem rodar com VCR em Java usando WireMock em modo replay, sem depender de internet real durante o CI normal.
 
 ## Rotina Semanal De Atualizacao VCR
 

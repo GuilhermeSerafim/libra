@@ -63,6 +63,7 @@ A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub A
 
 | Metodo | Rota | Descricao |
 | --- | --- | --- |
+| GET | `/api/auth/csrf` | Obter cookie/token CSRF |
 | POST | `/api/auth/register` | Cadastrar usuario |
 | POST | `/api/auth/login` | Login com sessao |
 | POST | `/api/auth/logout` | Logout |
@@ -74,4 +75,4 @@ A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub A
 | DELETE | `/api/books/{id}` | Excluir livro |
 | GET | `/api/books/import/isbn/{isbn}` | Pre-visualizar metadados por ISBN |
 
-CSRF esta habilitado para chamadas inseguras. Antes de enviar POST, PUT ou DELETE, incluindo `/api/auth/register`, `/api/auth/login` e `/api/auth/logout`, obtenha o cookie `XSRF-TOKEN` e envie o valor no header `X-XSRF-TOKEN`.
+CSRF esta habilitado para chamadas inseguras. Antes de enviar POST, PUT ou DELETE, incluindo `/api/auth/register`, `/api/auth/login` e `/api/auth/logout`, chame `GET /api/auth/csrf`, obtenha o cookie `XSRF-TOKEN` e envie o valor no header `X-XSRF-TOKEN`.

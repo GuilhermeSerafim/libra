@@ -3,6 +3,7 @@ package br.senac.biblioteca.controller;
 import br.senac.biblioteca.dto.request.LoginRequest;
 import br.senac.biblioteca.dto.request.RegisterRequest;
 import br.senac.biblioteca.dto.response.AuthResponse;
+import br.senac.biblioteca.dto.response.CsrfTokenResponse;
 import br.senac.biblioteca.dto.response.UserResponse;
 import br.senac.biblioteca.service.AuthService;
 import br.senac.biblioteca.service.CurrentUserService;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +39,11 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest servletRequest) {
         return authService.login(request, servletRequest);
+    }
+
+    @GetMapping("/csrf")
+    public CsrfTokenResponse csrf(CsrfToken csrfToken) {
+        return new CsrfTokenResponse(csrfToken.getHeaderName(), csrfToken.getParameterName(), csrfToken.getToken());
     }
 
     @PostMapping("/logout")
