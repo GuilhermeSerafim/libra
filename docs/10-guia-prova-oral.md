@@ -33,6 +33,7 @@
 
 | Pergunta | Resposta curta |
 | --- | --- |
+| Por que comecar pelo backend REST? | Porque o nucleo avaliado esta em Spring Boot, MongoDB, sessao, testes, VCR, Testcontainers, JaCoCo, SonarQube e CI; o frontend moderno pode consumir a API depois sem alterar as regras de negocio. |
 | Por que usar RTM? | Para provar rastreabilidade entre requisitos, casos de uso, casos de teste, evidencias e conceitos aplicados. |
 | Qual e a diferenca entre verificacao e validacao? | Verificacao confere se foi construido corretamente; validacao confere se atende a necessidade do usuario. |
 | Onde voce aplicou caixa branca? | Nos testes que analisam regras internas, branches, excecoes e cobertura do codigo. |

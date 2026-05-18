@@ -22,6 +22,7 @@
 - Conferir a ultima execucao da pipeline no GitHub Actions.
 - Abrir o relatorio de cobertura JaCoCo e confirmar a meta de 80%.
 - Revisar o dashboard do SonarQube.
+- Conferir README com comandos `mvn spring-boot:run`, `mvn verify`, atualizacao VCR, JaCoCo, SonarQube e GitHub Actions.
 - Conferir se a RTM esta atualizada com requisitos, testes e evidencias.
 - Conferir evidencia da rotina semanal de atualizacao VCR.
 - Revisar o guia da prova oral e treinar respostas curtas.
