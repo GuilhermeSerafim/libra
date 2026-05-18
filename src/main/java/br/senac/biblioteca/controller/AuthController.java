@@ -7,7 +7,6 @@ import br.senac.biblioteca.dto.response.UserResponse;
 import br.senac.biblioteca.service.AuthService;
 import br.senac.biblioteca.service.CurrentUserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -36,8 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        return authService.login(request, servletRequest, servletResponse);
+    public AuthResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest servletRequest) {
+        return authService.login(request, servletRequest);
     }
 
     @PostMapping("/logout")
