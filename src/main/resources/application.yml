@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: biblioteca-pessoal
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/biblioteca_pessoal}
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+
+open-library:
+  base-url: ${OPEN_LIBRARY_BASE_URL:https://openlibrary.org}
+  timeout-millis: 5000
