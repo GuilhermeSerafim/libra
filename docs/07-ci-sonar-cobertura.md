@@ -18,30 +18,39 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - run: mvn -B verify
-      - uses: actions/upload-artifact@v4
+      - name: Run tests and coverage
+        run: mvn -B verify
+      - name: Upload JaCoCo report
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: jacoco-report
           path: target/site/jacoco/
-      - name: Sonar analysis
+          if-no-files-found: error
+      - name: SonarQube analysis
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify sonar:sonar
+        run: mvn -B sonar:sonar
 ```
 
-Esse pipeline faz checkout do codigo, instala Java 21, usa cache do Maven, executa `mvn -B verify`, publica o relatorio de cobertura como artefato mesmo quando a execucao falha e roda a analise SonarQube com `mvn -B verify sonar:sonar`. O token e a URL do SonarQube devem ficar em secrets do GitHub Actions, como `SONAR_TOKEN` e `SONAR_HOST_URL`, nunca no repositorio. Tambem podem ser necessarias configuracoes como chave do projeto e URL do servidor no `pom.xml` ou nas propriedades do Maven. Os testes da Open Library devem rodar com VCR em Java usando WireMock em modo replay, sem depender de internet real durante o CI normal.
+Esse pipeline faz checkout do codigo, instala Java 21, usa cache do Maven, executa `mvn -B verify`, publica o relatorio de cobertura como artefato mesmo quando a execucao falha e depois roda a analise SonarQube com `mvn -B sonar:sonar`. O token e a URL do SonarQube devem ficar em secrets do GitHub Actions, como `SONAR_TOKEN` e `SONAR_HOST_URL`, nunca no repositorio. Tambem podem ser necessarias configuracoes como chave do projeto e URL do servidor no `pom.xml` ou nas propriedades do Maven. Os testes da Open Library devem rodar com VCR em Java usando WireMock em modo replay, sem depender de internet real durante o CI normal.
 
 ## Rotina Semanal De Atualizacao VCR
 
@@ -50,7 +59,7 @@ Alem do pipeline normal de qualidade, o projeto deve ter uma rotina semanal para
 | Fluxo | Gatilho | Comportamento |
 | --- | --- | --- |
 | CI normal | Push, pull request e execucao local de `mvn verify`. | Usa replay WireMock; nao chama a Open Library real. |
-| Atualizacao VCR | Agendada uma vez por semana e acionavel manualmente. | Chama a Open Library real, atualiza stubs/mappings, sanitiza e permite revisar diff. |
+| Atualizacao VCR | Agendada uma vez por semana e acionavel manualmente. | Chama a Open Library real, normaliza e atualiza a fixture/resposta VCR, roda testes em replay e permite revisar diff. |
 
 Exemplo conceitual de agendamento:
 
@@ -77,7 +86,7 @@ Evidencias esperadas:
 | Relatorio XML JaCoCo | Integracao com SonarQube. |
 | Meta minima obrigatoria de 80% | Criterio objetivo para acompanhar evolucao da qualidade. |
 | Testes associados a requisitos | Confirmar que cobertura nao substitui rastreabilidade. |
-| Stubs/mappings WireMock em replay | Confirmar que a integracao Open Library e testada como VCR Java de forma reproduzivel no CI normal. |
+| Fixture/resposta VCR em replay | Confirmar que a integracao Open Library e testada como VCR Java de forma reproduzivel no CI normal. |
 | Rotina semanal de atualizacao VCR | Confirmar que o projeto combate cassete eterno chamando a Open Library real de forma controlada. |
 
 ## SonarQube
@@ -109,4 +118,4 @@ A aplicacao efetiva do Quality Gate depende da configuracao do projeto no SonarQ
 
 Resposta sugerida:
 
-"O CI leva a qualidade da maquina local para o repositorio. A cada push ou pull request, o GitHub Actions executa `mvn -B verify`, roda os testes, gera cobertura com JaCoCo e envia a analise com `sonar:sonar` usando secrets como `SONAR_TOKEN` e `SONAR_HOST_URL`. A meta minima obrigatoria e 80%, com relatorios HTML e XML. O SonarQube complementa os testes analisando bugs, code smells, duplicacao e cobertura. Para Open Library, o fluxo normal usa VCR em Java com WireMock em replay, entao o CI nao depende da internet real. Para evitar cassete eterno, existe uma rotina semanal que atualiza os stubs/mappings batendo na Open Library real. No pull request, o Quality Gate depende da configuracao do projeto SonarQube e da decoracao de PR para indicar se o codigo novo esta saudavel antes de entrar na branch principal."
+"O CI leva a qualidade da maquina local para o repositorio. A cada push ou pull request, o GitHub Actions executa `mvn -B verify`, roda os testes, gera cobertura com JaCoCo e envia a analise com `sonar:sonar` usando secrets como `SONAR_TOKEN` e `SONAR_HOST_URL`. A meta minima obrigatoria e 80%, com relatorios HTML e XML. O SonarQube complementa os testes analisando bugs, code smells, duplicacao e cobertura. Para Open Library, o fluxo normal usa VCR em Java com WireMock em replay, entao o CI nao depende da internet real. Para evitar cassete eterno, existe uma rotina semanal que chama a Open Library real, normaliza a resposta, atualiza a fixture VCR, roda os testes em replay e commita a fixture se houver mudanca. No pull request, o Quality Gate depende da configuracao do projeto SonarQube e da decoracao de PR para indicar se o codigo novo esta saudavel antes de entrar na branch principal."

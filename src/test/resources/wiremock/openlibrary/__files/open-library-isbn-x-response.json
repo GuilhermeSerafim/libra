@@ -1,0 +1,21 @@
+{
+  "ISBN:012345678X": {
+    "url": "https://openlibrary.org/books/OL0000000M/ISBN_X_Example",
+    "title": "ISBN X Example",
+    "authors": [
+      {
+        "name": "Example Author"
+      }
+    ],
+    "number_of_pages": 123,
+    "publishers": [
+      {
+        "name": "Example Publisher"
+      }
+    ],
+    "publish_date": "2026",
+    "cover": {
+      "small": "https://covers.openlibrary.org/b/id/1-S.jpg"
+    }
+  }
+}

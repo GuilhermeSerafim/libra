@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/books",
+    "queryParameters": {
+      "bibkeys": {
+        "equalTo": "ISBN:1111111111"
+      },
+      "format": {
+        "equalTo": "json"
+      },
+      "jscmd": {
+        "equalTo": "data"
+      }
+    }
+  },
+  "response": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "message": "upstream error"
+    }
+  }
+}

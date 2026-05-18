@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      database: biblioteca_pessoal_test
+      auto-index-creation: true
+
+open-library:
+  base-url: http://localhost:8089
+  timeout-millis: 2000
