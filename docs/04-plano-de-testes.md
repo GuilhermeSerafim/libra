@@ -2,7 +2,7 @@
 
 ## Escopo
 
-O plano de testes cobre a validacao dos requisitos funcionais RF-01 a RF-09 do Gerenciador de Biblioteca Pessoal, incluindo cadastro de usuarios, autenticacao, sessao, cadastro, listagem, atualizacao, exclusao de livros, restricao das operacoes aos dados do usuario autenticado e importacao de metadados por ISBN via Open Library API.
+O plano de testes cobre a validacao dos requisitos funcionais RF-01 a RF-09 do Gerenciador de Biblioteca Pessoal, incluindo cadastro de usuarios, autenticacao, sessao, cadastro, listagem, atualizacao, exclusao de livros, restricao das operacoes aos dados do usuario autenticado e pre-visualizacao de metadados por ISBN via Open Library API.
 
 Tambem fazem parte do escopo os testes automatizados de unidade, integracao, regressao, caixa branca, caixa preta e VCR em Java com WireMock para chamada HTTP externa, com evidencias ligadas aos casos de teste TC-001 a TC-025 e a RTM.
 

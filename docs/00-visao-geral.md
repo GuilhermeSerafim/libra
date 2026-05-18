@@ -10,7 +10,7 @@ O objetivo de qualidade e demonstrar que o sistema atende aos requisitos funcion
 
 ## Escopo Funcional
 
-O escopo funcional contempla cadastro de usuarios, autenticacao, gerenciamento de sessao, CRUD de livros e importacao opcional de metadados por ISBN usando a Open Library API. As operacoes sobre livros devem ficar restritas ao usuario autenticado, garantindo que cada pessoa consulte, cadastre, atualize e exclua apenas os proprios registros.
+O escopo funcional contempla cadastro de usuarios, autenticacao, gerenciamento de sessao, CRUD de livros e pre-visualizacao opcional de metadados por ISBN usando a Open Library API. As operacoes sobre livros devem ficar restritas ao usuario autenticado, garantindo que cada pessoa consulte, cadastre, atualize e exclua apenas os proprios registros.
 
 ## Stack Oficial
 

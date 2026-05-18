@@ -3,7 +3,7 @@
 ## Roteiro De 3 A 5 Minutos
 
 1. Apresentar o dominio: o projeto e um Gerenciador de Biblioteca Pessoal para organizar livros do usuario.
-2. Explicar as funcionalidades principais: cadastro de usuarios, autenticacao, gerenciamento de sessao, CRUD de livros, restricao dos livros ao usuario autenticado atual e importacao por ISBN com Open Library.
+2. Explicar as funcionalidades principais: cadastro de usuarios, autenticacao, gerenciamento de sessao, CRUD de livros, restricao dos livros ao usuario autenticado atual e pre-visualizacao por ISBN com Open Library.
 3. Mostrar requisitos e RTM: cada requisito possui relacao com caso de uso, caso de teste, evidencia e conceito aplicado.
 4. Explicar os testes: unidade, integracao, caixa branca, caixa preta, cenarios com entradas validas, invalidas e limites, Testcontainers e VCR em Java com WireMock.
 5. Abrir evidencias: JaCoCo, GitHub Actions, Sonar, Testcontainers, VCR/WireMock, RTM, casos de teste e diagramas UML.
@@ -20,7 +20,7 @@
 | Caixa preta | Testes baseados em entrada e saida sem depender do codigo interno. | Casos de teste funcionais e validacoes de campos. | Avalia comportamento esperado a partir dos requisitos. |
 | Variacao de entradas | Tecnica para exercitar varios conjuntos de dados, como entradas validas, invalidas e limites. | Casos de teste e cenarios documentados. | Ajuda a ampliar cenarios equivalentes sem afirmar uma estrategia especifica de implementacao. |
 | Testcontainers | Teste de integracao com dependencia real em container. | Logs e testes usando banco ou servico em container. | Aproxima o teste do ambiente real sem depender de instalacao manual. |
-| Open Library API | Integracao externa para buscar metadados de livros por ISBN. | UC-08, RF-09 e testes TC-022 a TC-025. | Melhora o cadastro sem mudar o nucleo do sistema, que continua sendo CRUD de livros do usuario. |
+| Open Library API | Integracao externa para buscar metadados de livros por ISBN. | UC-08, RF-09 e testes TC-022 a TC-025. | Melhora o cadastro sem salvar automaticamente: o endpoint faz preview e a persistencia continua no CRUD de livros do usuario. |
 | VCR/WireMock | Gravacao, declaracao e reproducao de chamadas HTTP externas em Java. | Fixture/resposta VCR e testes do cliente Open Library. | WireMock e a forma Java indicada pela aula para cumprir VCR sem depender da internet real no CI. |
 | RTM | Rastrear requisito, caso de uso, teste, evidencia e conceito aplicado. | docs/03-rtm.md. | Ajuda a provar que nenhum requisito importante ficou sem teste. |
 | CI | Execucao automatica da verificacao a cada push ou pull request. | GitHub Actions. | Reduz risco de entregar codigo sem testes passando. |

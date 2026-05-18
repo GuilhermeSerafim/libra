@@ -16,7 +16,7 @@ A RTM conecta requisito, caso de uso, caso de teste e evidencia. O objetivo e ma
 | RF-06 | UC-06 | TC-014, TC-015, TC-016 | Evidencia de atualizacao de livro proprio, livro inexistente e regra de autorizacao | Regressao/regra de negocio |
 | RF-07 | UC-07 | TC-017, TC-018 | Evidencia de exclusao confirmada e cancelamento da exclusao | Fluxo alternativo |
 | RF-08 | UC-04, UC-05, UC-06, UC-07 | TC-012, TC-019, TC-020, TC-021 | Evidencia de listagem isolada por usuario, acesso negado, isolamento entre usuarios e bloqueio de operacoes indevidas | Seguranca/nao conformidade evitada |
-| RF-09 | UC-08 | TC-022, TC-023, TC-024, TC-025 | Evidencia de busca por ISBN com Open Library, replay VCR, ISBN nao encontrado e falha externa controlada | Integracao HTTP externa/VCR |
+| RF-09 | UC-08 | TC-022, TC-023, TC-024, TC-025 | Evidencia de busca por ISBN com Open Library, replay VCR, ausencia de persistencia automatica, ISBN nao encontrado e falha externa controlada | Integracao HTTP externa/VCR |
 
 ## Como Manter A RTM
 

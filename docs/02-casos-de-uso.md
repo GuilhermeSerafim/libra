@@ -196,32 +196,31 @@ Os fluxos principais representam o comportamento esperado do sistema. Fluxos alt
 
 - Falha de exclusao ou banco de dados: o sistema nao remove o livro e apresenta mensagem de erro controlada.
 
-## UC-08 Importar Livro Por ISBN
+## UC-08 Pre-visualizar Metadados Por ISBN
 
 | Campo | Descricao |
 |---|---|
 | Requisito | RF-09, RF-04, RF-08 |
 | Ator | Usuario autenticado |
 | Pre-condicao | O usuario esta autenticado e informa um ISBN valido. |
-| Pos-condicao | Os metadados retornados pela Open Library sao exibidos para revisao e o livro confirmado e salvo na biblioteca do usuario. |
+| Pos-condicao | Os metadados retornados pela Open Library sao exibidos para revisao, sem salvar automaticamente um livro na biblioteca do usuario. |
 
 **Fluxo principal**
 
-1. O usuario acessa a opcao de importar livro por ISBN.
+1. O usuario acessa a opcao de buscar metadados por ISBN.
 2. O sistema valida a sessao ativa.
 3. O usuario informa o ISBN.
 4. O sistema consulta a Open Library API por meio de um cliente HTTP isolado.
 5. O sistema exibe titulo, autores, editora, data, capa ou outros metadados disponiveis.
-6. O usuario revisa ou complementa os dados.
-7. O sistema associa o livro ao usuario autenticado.
-8. O sistema persiste o livro no MongoDB.
-9. O sistema informa que o livro foi cadastrado.
+6. O usuario revisa ou complementa os dados antes de decidir cadastrar.
+7. Se decidir salvar, o usuario confirma os dados pelo fluxo normal de cadastro de livro (UC-04).
+8. O sistema nao persiste nenhum livro automaticamente durante a pre-visualizacao por ISBN.
 
 **Fluxos alternativos**
 
 - ISBN invalido: o sistema bloqueia a consulta e informa o formato esperado.
 - ISBN nao encontrado: o sistema informa que nao localizou metadados e permite cadastro manual.
-- Usuario cancela a importacao: o sistema nao salva o livro.
+- Usuario cancela a pre-visualizacao: o sistema nao salva o livro.
 
 **Excecoes**
 

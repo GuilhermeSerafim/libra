@@ -26,7 +26,7 @@
 - Conferir se a RTM esta atualizada com requisitos, testes e evidencias.
 - Conferir evidencia da rotina semanal de atualizacao VCR.
 - Revisar o guia da prova oral e treinar respostas curtas.
-- Separar evidencias dos principais fluxos do sistema, como cadastro, listagem, edicao, exclusao, importacao por ISBN e validacoes.
+- Separar evidencias dos principais fluxos do sistema, como cadastro, listagem, edicao, exclusao, pre-visualizacao por ISBN e validacoes.
 
 ## Aplicacao na prova oral
 

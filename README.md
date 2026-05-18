@@ -20,7 +20,7 @@ Backend REST API em Spring Boot para organizar livros de usuarios autenticados.
 - Login, logout e sessao
 - CRUD de livros do usuario autenticado
 - Restricao de acesso por usuario
-- Importacao de metadados por ISBN com Open Library
+- Pre-visualizacao de metadados por ISBN com Open Library
 
 ## Pre-requisitos
 
@@ -74,4 +74,4 @@ A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub A
 | DELETE | `/api/books/{id}` | Excluir livro |
 | GET | `/api/books/import/isbn/{isbn}` | Pre-visualizar metadados por ISBN |
 
-CSRF esta habilitado para chamadas inseguras. Antes de enviar POST, PUT ou DELETE, incluindo `/api/auth/register` e `/api/auth/login`, obtenha o cookie `XSRF-TOKEN` e envie o valor no header `X-XSRF-TOKEN`.
+CSRF esta habilitado para chamadas inseguras. Antes de enviar POST, PUT ou DELETE, incluindo `/api/auth/register`, `/api/auth/login` e `/api/auth/logout`, obtenha o cookie `XSRF-TOKEN` e envie o valor no header `X-XSRF-TOKEN`.

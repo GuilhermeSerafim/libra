@@ -34,7 +34,7 @@ O campo tipo indica a tecnica principal aplicada ao caso, sem impedir que o mesm
 | TC-022 | VCR/WireMock | RF-09 | UC-08 | Validar busca de metadados por ISBN com resposta gravada ou declarada da Open Library. | Sistema preenche dados do livro a partir do replay WireMock sem chamada real de internet. |
 | TC-023 | Negativo | RF-09 | UC-08 | Validar ISBN inexistente ou sem retorno na Open Library. | Sistema informa que nao encontrou metadados e permite cadastro manual. |
 | TC-024 | Negativo | RF-09 | UC-08 | Validar falha externa controlada na busca por ISBN. | Sistema apresenta mensagem controlada e nao salva livro incompleto automaticamente. |
-| TC-025 | Integracao | RF-09, RF-04, RF-08 | UC-08 | Validar importacao confirmada e persistencia do livro importado. | Livro importado e salvo no MongoDB do Testcontainers associado ao usuario autenticado. |
+| TC-025 | Integracao | RF-09, RF-08 | UC-08 | Validar que a pre-visualizacao por ISBN nao persiste livro automaticamente. | Sistema retorna metadados da Open Library e a base MongoDB permanece sem novo livro ate o usuario executar o cadastro normal. |
 
 ## Aplicacao Das Tecnicas
 
@@ -49,4 +49,4 @@ O campo tipo indica a tecnica principal aplicada ao caso, sem impedir que o mesm
 
 ## Aplicacao na prova oral
 
-Na prova oral, os casos de teste devem ser explicados como a transformacao dos requisitos e casos de uso em validacoes objetivas. A equipe pode citar caixa preta para validar comportamento visivel, caixa branca para regras internas como autorizacao, cenarios negativos dedicados para entradas invalidas, integracao com Testcontainers para persistencia real, VCR em Java com WireMock para Open Library e regressao para garantir que cadastro, login, CRUD e importacao por ISBN continuem funcionando apos mudancas.
+Na prova oral, os casos de teste devem ser explicados como a transformacao dos requisitos e casos de uso em validacoes objetivas. A equipe pode citar caixa preta para validar comportamento visivel, caixa branca para regras internas como autorizacao, cenarios negativos dedicados para entradas invalidas, integracao com Testcontainers para persistencia real, VCR em Java com WireMock para Open Library e regressao para garantir que cadastro, login, CRUD e pre-visualizacao por ISBN continuem funcionando apos mudancas.
