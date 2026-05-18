@@ -17,6 +17,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,12 +68,41 @@ class BookImportControllerTest extends AbstractMongoIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Clean Code"))
                 .andExpect(jsonPath("$.authors[0]").value("Robert C. Martin"));
+
+        assertThat(bookRepository.count()).isZero();
     }
 
     @Test
     void importRequiresAuthentication() throws Exception {
         mockMvc.perform(get("/api/books/import/isbn/9780132350884"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void rejectsInvalidIsbn() throws Exception {
+        MockHttpSession session = login("grace@example.com");
+
+        mockMvc.perform(get("/api/books/import/isbn/123").session(session))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("ISBN deve ter 10 ou 13 caracteres validos."));
+    }
+
+    @Test
+    void acceptsIsbn10EndingWithX() throws Exception {
+        MockHttpSession session = login("katherine@example.com");
+
+        mockMvc.perform(get("/api/books/import/isbn/012345678x").session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("ISBN X Example"));
+    }
+
+    @Test
+    void returnsServiceUnavailableWhenOpenLibraryFails() throws Exception {
+        MockHttpSession session = login("margaret@example.com");
+
+        mockMvc.perform(get("/api/books/import/isbn/1111111111").session(session))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.message").value("Open Library indisponivel."));
     }
 
     private MockHttpSession login(String email) throws Exception {

@@ -2,10 +2,12 @@ package br.senac.biblioteca.client;
 
 import br.senac.biblioteca.config.OpenLibraryProperties;
 import br.senac.biblioteca.dto.response.BookImportPreviewResponse;
+import br.senac.biblioteca.exception.ExternalServiceException;
 import br.senac.biblioteca.exception.NotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
@@ -26,15 +28,20 @@ public class OpenLibraryClient {
     }
 
     public BookImportPreviewResponse findByIsbn(String isbn) {
-        JsonNode root = restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/books")
-                        .queryParam("bibkeys", "ISBN:" + isbn)
-                        .queryParam("format", "json")
-                        .queryParam("jscmd", "data")
-                        .build())
-                .retrieve()
-                .body(JsonNode.class);
+        JsonNode root;
+        try {
+            root = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/api/books")
+                            .queryParam("bibkeys", "ISBN:" + isbn)
+                            .queryParam("format", "json")
+                            .queryParam("jscmd", "data")
+                            .build())
+                    .retrieve()
+                    .body(JsonNode.class);
+        } catch (RestClientException ex) {
+            throw new ExternalServiceException("Open Library indisponivel.");
+        }
 
         JsonNode book = root == null ? null : root.get("ISBN:" + isbn);
         if (book == null || book.isMissingNode() || book.isNull()) {

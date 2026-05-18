@@ -14,9 +14,9 @@ public class OpenLibraryService {
     }
 
     public BookImportPreviewResponse previewByIsbn(String isbn) {
-        String normalized = isbn == null ? "" : isbn.replace("-", "").trim();
-        if (!normalized.matches("\\d{10}|\\d{13}")) {
-            throw new BadRequestException("ISBN deve ter 10 ou 13 digitos.");
+        String normalized = isbn == null ? "" : isbn.trim().replaceAll("[-\\s]", "").toUpperCase();
+        if (!normalized.matches("\\d{13}|\\d{9}[\\dX]")) {
+            throw new BadRequestException("ISBN deve ter 10 ou 13 caracteres validos.");
         }
         return client.findByIsbn(normalized);
     }
