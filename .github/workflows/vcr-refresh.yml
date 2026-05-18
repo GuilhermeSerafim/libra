@@ -16,6 +16,12 @@ jobs:
       - name: Refresh Open Library VCR
         shell: pwsh
         run: ./scripts/update-openlibrary-vcr.ps1
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Verify refreshed VCR replay
+        run: mvn -q "-Dtest=OpenLibraryClientTest,BookImportControllerTest" test
       - name: Commit refreshed VCR files
         shell: bash
         run: |
