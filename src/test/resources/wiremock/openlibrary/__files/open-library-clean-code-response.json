@@ -1,0 +1,21 @@
+{
+  "ISBN:9780132350884": {
+    "url": "https://openlibrary.org/books/OL22837051M/Clean_Code",
+    "title": "Clean Code",
+    "authors": [
+      {
+        "name": "Robert C. Martin"
+      }
+    ],
+    "number_of_pages": 431,
+    "publishers": [
+      {
+        "name": "Prentice Hall"
+      }
+    ],
+    "publish_date": "July 2008",
+    "cover": {
+      "small": "https://covers.openlibrary.org/b/id/15126503-S.jpg"
+    }
+  }
+}
