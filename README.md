@@ -37,6 +37,21 @@ Execute:
 mvn spring-boot:run
 ```
 
+Se a porta `8080` estiver ocupada, execute em outra porta:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
+```
+
+## Swagger UI
+
+Com a aplicacao rodando, a documentacao interativa fica em:
+
+- `http://localhost:8080/swagger-ui/index.html`
+- `http://localhost:8080/v3/api-docs`
+
+Os endpoints do Swagger ficam publicos para facilitar a avaliacao e a apresentacao. As rotas da API continuam protegidas por sessao e CSRF conforme a regra abaixo.
+
 ## Testes
 
 ```bash

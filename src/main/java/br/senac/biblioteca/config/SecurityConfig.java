@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 writeError(response, objectMapper, HttpStatus.FORBIDDEN, "Acesso negado.", request.getRequestURI())))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/csrf").permitAll()
                         .anyRequest().authenticated()
                 );

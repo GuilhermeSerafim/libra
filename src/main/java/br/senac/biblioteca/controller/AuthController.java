@@ -7,6 +7,7 @@ import br.senac.biblioteca.dto.response.CsrfTokenResponse;
 import br.senac.biblioteca.dto.response.UserResponse;
 import br.senac.biblioteca.service.AuthService;
 import br.senac.biblioteca.service.CurrentUserService;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
     @GetMapping("/csrf")
-    public CsrfTokenResponse csrf(CsrfToken csrfToken) {
+    public CsrfTokenResponse csrf(@Parameter(hidden = true) CsrfToken csrfToken) {
         return new CsrfTokenResponse(csrfToken.getHeaderName(), csrfToken.getParameterName(), csrfToken.getToken());
     }
 
