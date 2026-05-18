@@ -22,10 +22,16 @@ Backend REST API em Spring Boot para organizar livros de usuarios autenticados.
 - Restricao de acesso por usuario
 - Importacao de metadados por ISBN com Open Library
 
+## Pre-requisitos
+
+- Java 21
+- Maven
+- Docker em execucao para testes com Testcontainers
+- MongoDB local ou `MONGODB_URI` para executar a aplicacao
+
 ## Executar Localmente
 
-1. Suba MongoDB local ou configure `MONGODB_URI`.
-2. Execute:
+Execute:
 
 ```bash
 mvn spring-boot:run
@@ -45,7 +51,7 @@ Os testes de persistencia usam MongoDB via Testcontainers. Os testes da Open Lib
 powershell -ExecutionPolicy Bypass -File scripts/update-openlibrary-vcr.ps1
 ```
 
-A atualizacao online do VCR roda uma vez por semana no GitHub Actions para evitar cassete eterno.
+A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub Actions para evitar cassete eterno.
 
 ## Qualidade
 
@@ -68,4 +74,4 @@ A atualizacao online do VCR roda uma vez por semana no GitHub Actions para evita
 | DELETE | `/api/books/{id}` | Excluir livro |
 | GET | `/api/books/import/isbn/{isbn}` | Pre-visualizar metadados por ISBN |
 
-Chamadas autenticadas que alteram estado usam sessao/cookie e CSRF habilitado. Inclua o token CSRF nas requisicoes inseguras, como POST, PUT e DELETE.
+CSRF esta habilitado para chamadas inseguras. Antes de enviar POST, PUT ou DELETE, incluindo `/api/auth/register` e `/api/auth/login`, obtenha o cookie `XSRF-TOKEN` e envie o valor no header `X-XSRF-TOKEN`.

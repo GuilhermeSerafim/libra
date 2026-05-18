@@ -14,7 +14,7 @@
 | SonarQube | Analise estatica com metricas de qualidade, bugs, vulnerabilidades e code smells. |
 | Testcontainers | Testes de integracao usando ambiente realista, como banco em container. |
 | VCR/WireMock para Open Library API | Testes da busca por ISBN executando em replay, sem depender de internet real no CI. |
-| Atualizacao semanal VCR | Rotina semanal configurada para atualizar stubs/mappings da Open Library e evitar cassete eterno. |
+| Atualizacao semanal VCR | Rotina semanal configurada para atualizar fixture/resposta VCR da Open Library e evitar cassete eterno. |
 
 ## Checklist Antes Da Apresentacao
 
