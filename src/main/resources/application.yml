@@ -4,6 +4,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI:mongodb://localhost:27017/biblioteca_pessoal}
+      auto-index-creation: true
 
 server:
   servlet:
