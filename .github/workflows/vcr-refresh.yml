@@ -1,0 +1,30 @@
+name: refresh-open-library-vcr
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh Open Library VCR
+        shell: pwsh
+        run: ./scripts/update-openlibrary-vcr.ps1
+      - name: Commit refreshed VCR files
+        shell: bash
+        run: |
+          if git diff --quiet -- src/test/resources/wiremock/openlibrary/__files/open-library-clean-code-response.json; then
+            echo "No VCR changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/test/resources/wiremock/openlibrary/__files/open-library-clean-code-response.json
+          git commit -m "test: refresh Open Library VCR"
+          git push
