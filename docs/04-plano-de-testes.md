@@ -4,7 +4,7 @@
 
 O plano de testes cobre a validacao dos requisitos funcionais RF-01 a RF-09 do Gerenciador de Biblioteca Pessoal, incluindo cadastro de usuarios, autenticacao, sessao, cadastro, listagem, atualizacao, exclusao de livros, restricao das operacoes aos dados do usuario autenticado e importacao de metadados por ISBN via Open Library API.
 
-Tambem fazem parte do escopo os testes automatizados de unidade, integracao, regressao, caixa branca, caixa preta, parametrizados e VCR em Java com WireMock para chamada HTTP externa, com evidencias ligadas aos casos de teste TC-001 a TC-025 e a RTM.
+Tambem fazem parte do escopo os testes automatizados de unidade, integracao, regressao, caixa branca, caixa preta e VCR em Java com WireMock para chamada HTTP externa, com evidencias ligadas aos casos de teste TC-001 a TC-025 e a RTM.
 
 Ficam fora do escopo deste plano pagamentos, recomendacoes de livros, outras integracoes externas alem da Open Library, publicacao em producao, testes manuais exploratorios extensos, testes de carga, testes de compatibilidade profunda entre navegadores e validacoes de infraestrutura de producao que nao sejam exigidas pelo projeto academico.
 
@@ -25,7 +25,6 @@ Ficam fora do escopo deste plano pagamentos, recomendacoes de livros, outras int
 | Integracao | Validar comunicacao entre camadas e persistencia real. | Cadastro de livro persistido no MongoDB com Testcontainers. |
 | Caixa branca | Validar caminhos internos e decisoes de codigo conhecidas pela equipe. | Regra que impede atualizacao de livro de outro usuario. |
 | Caixa preta | Validar entradas e saidas observaveis sem depender da implementacao interna. | Login valido, credenciais invalidas, listagem vazia e mensagens esperadas. |
-| Parametrizado | Executar o mesmo comportamento com varias combinacoes de entrada. | Nome, email, senha, campos vazios e email malformado. |
 | Regressao | Reexecutar cenarios principais apos alteracoes para detectar quebras. | Cadastro, login, CRUD de livros e restricoes por usuario autenticado. |
 | VCR/WireMock | Gravar, declarar ou reproduzir respostas HTTP externas de forma controlada. | Busca de livro por ISBN na Open Library sem depender de rede real no CI. |
 
@@ -41,7 +40,7 @@ A integracao com Open Library API deve usar VCR em Java com WireMock para gravar
 - Casos de teste TC-001 a TC-025 definidos e vinculados aos RFs e UCs.
 - Ambiente local ou de CI preparado para executar testes Java/Spring Boot.
 - Dependencias de Testcontainers configuradas para testes com MongoDB.
-- Dependencias do WireMock e cassetes/mappings VCR configurados para testes da Open Library API.
+- Dependencias do WireMock e fixture/resposta VCR configuradas para testes da Open Library API.
 - Segredos e credenciais fora do codigo-fonte versionado.
 - Dados de teste definidos sem secrets reais.
 
@@ -72,7 +71,7 @@ A integracao com Open Library API deve usar VCR em Java com WireMock para gravar
 | Diferenca entre Mongo local e CI | Testes passam localmente e falham no pipeline. | Usar MongoDB em Testcontainers como fonte padronizada para integracao. |
 | Cobertura abaixo de 80% | Nao atendimento ao RNF-05 e fragilidade na defesa oral. | Monitorar JaCoCo no pipeline e incluir testes para fluxos criticos e alternativos. |
 | Secrets vazados | Risco de seguranca e nao atendimento ao RNF-08. | Usar variaveis de ambiente, secrets do GitHub Actions e revisao de arquivos versionados. |
-| Cassete ou mapping WireMock desatualizado | Teste deixa de refletir o contrato atual da API externa. | Regravar ou atualizar o replay de forma controlada quando o contrato da Open Library mudar e revisar o diff. |
+| Cassete ou resposta WireMock desatualizada | Teste deixa de refletir o contrato atual da API externa. | Regravar ou atualizar o replay de forma controlada quando o contrato da Open Library mudar e revisar o diff. |
 | RTM desatualizada | Perda de rastreabilidade entre requisito, teste e evidencia. | Atualizar RTM sempre que RF, UC ou TC for criado, alterado ou removido. |
 | Testes acoplados entre si | Falhas intermitentes | Limpar dados entre testes e isolar cenarios. |
 

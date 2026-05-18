@@ -31,7 +31,7 @@ Fluxo esperado:
 2. O WireMock responde com um stub programatico ou arquivo JSON versionado.
 3. A resposta e revisada para remover dados sensiveis, se houver.
 4. O CI executa os testes em modo replay, consumindo a resposta controlada.
-5. Se o contrato da API mudar, o stub/cassete e atualizado de forma intencional e revisado.
+5. Se o contrato da API mudar, a fixture/resposta VCR e atualizada de forma intencional e revisada.
 
 ## Execucao Do VCR/WireMock
 
@@ -40,21 +40,21 @@ O VCR/WireMock deve ter dois fluxos separados.
 | Fluxo | Quando executa | Acessa internet? | Objetivo |
 | --- | --- | --- | --- |
 | Replay normal | A cada push, pull request ou `mvn verify`. | Nao. | Testar o codigo da aplicacao contra respostas HTTP controladas. |
-| Atualizacao semanal | Uma vez por semana, em rotina agendada ou manual. | Sim, chama a Open Library real. | Atualizar stubs/mappings para evitar cassete eterno. |
+| Atualizacao semanal | Uma vez por semana, em rotina agendada ou manual. | Sim, chama a Open Library real. | Atualizar fixture/resposta VCR para evitar cassete eterno. |
 
 No replay normal, o teste sobe o WireMock local, aponta o `OpenLibraryClient` para esse servidor local e valida se a aplicacao trata corretamente a resposta. Esse fluxo testa o codigo do projeto, nao a disponibilidade da Open Library naquele momento.
 
-Na atualizacao semanal, a suite autorizada chama a Open Library real, atualiza os stubs/mappings, sanitiza o conteudo se necessario e gera um diff para revisao. Esse fluxo combate o anti-pattern de cassete eterno sem transformar todo teste em dependencia de internet.
+Na atualizacao semanal, a suite autorizada chama a Open Library real, normaliza e atualiza a fixture/resposta VCR, executa os testes em replay e gera um diff para revisao. Esse fluxo combate o anti-pattern de cassete eterno sem transformar todo teste em dependencia de internet.
 
 Cuidados obrigatorios:
 
 1. Sanitizar tokens, emails, nomes reais, chaves de API e qualquer dado sensivel.
 2. Manter secrets fora do repositorio.
-3. Versionar apenas stubs, mappings ou cassetes seguros.
+3. Versionar apenas fixtures, respostas ou cassetes seguros.
 4. Evitar chamadas reais para a internet no CI normal.
 5. Executar atualizacao online do VCR/WireMock uma vez por semana.
 
-As evidencias esperadas sao stubs/mappings do WireMock, testes automatizados consumindo essas respostas e configuracao de secrets fora do repositorio quando houver necessidade de credenciais. A Open Library normalmente dispensa credencial para consultas publicas, mas a regra de seguranca continua valendo para qualquer integracao futura.
+As evidencias esperadas sao a fixture/resposta VCR do WireMock, testes automatizados consumindo essa resposta e configuracao de secrets fora do repositorio quando houver necessidade de credenciais. A Open Library normalmente dispensa credencial para consultas publicas, mas a regra de seguranca continua valendo para qualquer integracao futura.
 
 Na defesa, a formulacao correta e: **VCR em Java com WireMock**. Isso atende o pedido de VCR da descricao oficial e segue o slide que apresenta WireMock como a implementacao Java desse replay HTTP.
 
@@ -70,7 +70,7 @@ A decisao deve seguir o alvo real do teste. VCR/WireMock controla chamadas HTTP 
 | Fidelidade | Alta para payload, contrato e tratamento HTTP; baixa para a logica interna da API externa. | Alta para comportamento real do servico usado, como driver, conexao, query e persistencia. |
 | Requer Docker | Nao necessariamente. | Sim. |
 | Ideal para | Testes de unidade ou integracao de clientes HTTP. | Testes de integracao com persistencia e infraestrutura real. |
-| Manutencao | Atualizar stub, mapping ou cassete uma vez por semana ou quando o contrato da API mudar. | Manter imagem e configuracao do container alinhadas ao ambiente do projeto. |
+| Manutencao | Atualizar fixture/resposta VCR uma vez por semana ou quando o contrato da API mudar. | Manter imagem e configuracao do container alinhadas ao ambiente do projeto. |
 
 No Gerenciador de Biblioteca Pessoal, isso significa: **Open Library usa VCR/WireMock**; **MongoDB usa Testcontainers**.
 
@@ -102,4 +102,4 @@ Para a entrega final, o argumento tecnico mais forte e mostrar que as regras for
 
 Resposta sugerida:
 
-"A automacao do projeto foi pensada para provar comportamento com fidelidade. Como mocks tradicionais estao proibidos no projeto final, para persistencia usamos Testcontainers, que sobe um MongoDB real durante os testes de integracao. Isso valida consultas, gravacoes e configuracao da aplicacao em um ambiente controlado e descartavel. Para a Open Library API, usamos VCR em Java com WireMock. No CI normal, ele roda em replay sem internet real; uma vez por semana, atualizamos os stubs/mappings batendo na Open Library para evitar cassete eterno. Assim, os testes ficam confiaveis sem deixar o contrato externo abandonado."
+"A automacao do projeto foi pensada para provar comportamento com fidelidade. Como mocks tradicionais estao proibidos no projeto final, para persistencia usamos Testcontainers, que sobe um MongoDB real durante os testes de integracao. Isso valida consultas, gravacoes e configuracao da aplicacao em um ambiente controlado e descartavel. Para a Open Library API, usamos VCR em Java com WireMock. No CI normal, ele roda em replay sem internet real; uma vez por semana, atualizamos a fixture/resposta VCR batendo na Open Library para evitar cassete eterno. Assim, os testes ficam confiaveis sem deixar o contrato externo abandonado."

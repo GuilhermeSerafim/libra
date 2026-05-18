@@ -50,7 +50,7 @@ Alem do pipeline normal de qualidade, o projeto deve ter uma rotina semanal para
 | Fluxo | Gatilho | Comportamento |
 | --- | --- | --- |
 | CI normal | Push, pull request e execucao local de `mvn verify`. | Usa replay WireMock; nao chama a Open Library real. |
-| Atualizacao VCR | Agendada uma vez por semana e acionavel manualmente. | Chama a Open Library real, atualiza stubs/mappings, sanitiza e permite revisar diff. |
+| Atualizacao VCR | Agendada uma vez por semana e acionavel manualmente. | Chama a Open Library real, normaliza e atualiza a fixture/resposta VCR, roda testes em replay e permite revisar diff. |
 
 Exemplo conceitual de agendamento:
 
@@ -77,7 +77,7 @@ Evidencias esperadas:
 | Relatorio XML JaCoCo | Integracao com SonarQube. |
 | Meta minima obrigatoria de 80% | Criterio objetivo para acompanhar evolucao da qualidade. |
 | Testes associados a requisitos | Confirmar que cobertura nao substitui rastreabilidade. |
-| Stubs/mappings WireMock em replay | Confirmar que a integracao Open Library e testada como VCR Java de forma reproduzivel no CI normal. |
+| Fixture/resposta VCR em replay | Confirmar que a integracao Open Library e testada como VCR Java de forma reproduzivel no CI normal. |
 | Rotina semanal de atualizacao VCR | Confirmar que o projeto combate cassete eterno chamando a Open Library real de forma controlada. |
 
 ## SonarQube
@@ -109,4 +109,4 @@ A aplicacao efetiva do Quality Gate depende da configuracao do projeto no SonarQ
 
 Resposta sugerida:
 
-"O CI leva a qualidade da maquina local para o repositorio. A cada push ou pull request, o GitHub Actions executa `mvn -B verify`, roda os testes, gera cobertura com JaCoCo e envia a analise com `sonar:sonar` usando secrets como `SONAR_TOKEN` e `SONAR_HOST_URL`. A meta minima obrigatoria e 80%, com relatorios HTML e XML. O SonarQube complementa os testes analisando bugs, code smells, duplicacao e cobertura. Para Open Library, o fluxo normal usa VCR em Java com WireMock em replay, entao o CI nao depende da internet real. Para evitar cassete eterno, existe uma rotina semanal que atualiza os stubs/mappings batendo na Open Library real. No pull request, o Quality Gate depende da configuracao do projeto SonarQube e da decoracao de PR para indicar se o codigo novo esta saudavel antes de entrar na branch principal."
+"O CI leva a qualidade da maquina local para o repositorio. A cada push ou pull request, o GitHub Actions executa `mvn -B verify`, roda os testes, gera cobertura com JaCoCo e envia a analise com `sonar:sonar` usando secrets como `SONAR_TOKEN` e `SONAR_HOST_URL`. A meta minima obrigatoria e 80%, com relatorios HTML e XML. O SonarQube complementa os testes analisando bugs, code smells, duplicacao e cobertura. Para Open Library, o fluxo normal usa VCR em Java com WireMock em replay, entao o CI nao depende da internet real. Para evitar cassete eterno, existe uma rotina semanal que chama a Open Library real, normaliza a resposta, atualiza a fixture VCR, roda os testes em replay e commita a fixture se houver mudanca. No pull request, o Quality Gate depende da configuracao do projeto SonarQube e da decoracao de PR para indicar se o codigo novo esta saudavel antes de entrar na branch principal."
