@@ -126,6 +126,51 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void rejectsInvalidBookStatusAsBadRequest() throws Exception {
+        MockHttpSession session = login("ada@example.com");
+
+        mockMvc.perform(post("/api/books")
+                        .session(session)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"Bad","status":"DONE"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Dados invalidos."));
+    }
+
+    @Test
+    void rejectsInvalidPageCount() throws Exception {
+        MockHttpSession session = login("ada@example.com");
+
+        mockMvc.perform(post("/api/books")
+                        .session(session)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"Bad Pages","pageCount":0}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Dados invalidos."));
+    }
+
+    @Test
+    void persistsOpenLibraryMetadataSourceWhenProvided() throws Exception {
+        MockHttpSession session = login("ada@example.com");
+
+        mockMvc.perform(post("/api/books")
+                        .session(session)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"Imported","metadataSource":"OPEN_LIBRARY"}
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.metadataSource").value("OPEN_LIBRARY"));
+    }
+
     private MockHttpSession login(String email) throws Exception {
         mockMvc.perform(post("/api/auth/register")
                         .with(csrf())

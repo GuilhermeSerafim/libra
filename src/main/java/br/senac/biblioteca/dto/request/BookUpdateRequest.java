@@ -14,7 +14,7 @@ public record BookUpdateRequest(
         String isbn,
         String publisher,
         String publishDate,
-        Integer pageCount,
+        @Min(1) Integer pageCount,
         String coverUrl,
         BookStatus status,
         @Min(1) @Max(5) Integer rating,
