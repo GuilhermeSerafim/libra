@@ -4,6 +4,7 @@ import br.senac.biblioteca.AbstractMongoIntegrationTest;
 import br.senac.biblioteca.repository.BookRepository;
 import br.senac.biblioteca.repository.UserRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,11 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,6 +61,23 @@ class BookImportControllerTest extends AbstractMongoIntegrationTest {
     void clean() {
         bookRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+    private Cookie issueXsrfCookie() throws Exception {
+        var csrfResponse = mockMvc.perform(get("/api/auth/csrf"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Cookie xsrfCookie = csrfResponse.getResponse().getCookie("XSRF-TOKEN");
+        assertNotNull(xsrfCookie);
+        return xsrfCookie;
+    }
+
+    private ResultActions performWithRealCsrf(MockHttpServletRequestBuilder requestBuilder) throws Exception {
+        Cookie xsrfCookie = issueXsrfCookie();
+        return mockMvc.perform(requestBuilder
+                .cookie(xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()));
     }
 
     @Test
@@ -106,16 +126,14 @@ class BookImportControllerTest extends AbstractMongoIntegrationTest {
     }
 
     private MockHttpSession login(String email) throws Exception {
-        mockMvc.perform(post("/api/auth/register")
-                        .with(csrf())
+        performWithRealCsrf(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"name":"User","email":"%s","password":"StrongPass123"}
                                 """.formatted(email)))
                 .andExpect(status().isCreated());
 
-        return (MockHttpSession) mockMvc.perform(post("/api/auth/login")
-                        .with(csrf())
+        return (MockHttpSession) performWithRealCsrf(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"email":"%s","password":"StrongPass123"}
