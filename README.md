@@ -93,6 +93,7 @@ A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub A
 - CI: GitHub Actions executando backend (`mvn verify`) e frontend (`npm run lint` + `npm run build`).
 - Evidencias SonarQube: `docs/evidencias/sonarqube/`.
 - Evidencias do frontend: `docs/evidencias/frontend/`.
+- Diagramas UML de sequencia: `docs/11-diagramas-sequencia.md`.
 
 Ultima analise SonarQube registrada:
 
@@ -120,3 +121,20 @@ Ultima analise SonarQube registrada:
 | GET | `/api/books/import/isbn/{isbn}` | Pre-visualizar metadados por ISBN |
 
 CSRF esta habilitado para chamadas inseguras. Antes de enviar POST, PUT ou DELETE, incluindo `/api/auth/register`, `/api/auth/login` e `/api/auth/logout`, chame `GET /api/auth/csrf`, obtenha o cookie `XSRF-TOKEN` e envie o valor no header `X-XSRF-TOKEN`.
+
+## Documentacao Da Entrega
+
+| Documento | Finalidade |
+| --- | --- |
+| `docs/00-visao-geral.md` | Escopo, stack oficial, premissas e entregaveis. |
+| `docs/01-requisitos.md` | Requisitos funcionais, nao funcionais e restricoes tecnicas. |
+| `docs/02-casos-de-uso.md` | Fluxos principais, alternativos e excecoes. |
+| `docs/03-rtm.md` | Rastreabilidade entre RFs, UCs, TCs, evidencias e conceitos. |
+| `docs/04-plano-de-testes.md` | Estrategia, criterios, riscos e metricas de teste. |
+| `docs/05-casos-de-teste.md` | Catalogo TC-001 a TC-025. |
+| `docs/06-estrategia-automacao.md` | Testcontainers, VCR/WireMock, regressao e camadas automatizadas. |
+| `docs/07-ci-sonar-cobertura.md` | GitHub Actions, JaCoCo, SonarQube e Quality Gate. |
+| `docs/08-gestao-bugs-e-evidencias.md` | Registro de bugs, severidade, prioridade e evidencias objetivas. |
+| `docs/09-checklist-entrega.md` | Checklist final antes da apresentacao. |
+| `docs/10-guia-prova-oral.md` | Roteiro de defesa e perguntas provaveis. |
+| `docs/11-diagramas-sequencia.md` | Diagramas UML de sequencia dos fluxos principais. |

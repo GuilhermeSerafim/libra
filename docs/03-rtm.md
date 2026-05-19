@@ -8,15 +8,27 @@ A RTM conecta requisito, caso de uso, caso de teste e evidencia. O objetivo e ma
 
 | Requisito | Caso de uso | Casos de teste | Evidencia esperada | Conceito aplicado |
 |---|---|---|---|---|
-| RF-01 | UC-01 | TC-001, TC-002, TC-003 | Evidencia de cadastro de usuario valido, email duplicado e senha invalida | Validacao, caso positivo, caso negativo |
-| RF-02 | UC-02 | TC-004, TC-005, TC-006 | Evidencia de login valido, credenciais invalidas e campos obrigatorios | Caixa preta/autenticacao |
-| RF-03 | UC-02, UC-03 | TC-007, TC-008 | Evidencia de criacao de sessao, manutencao de acesso autenticado e logout | Gerenciamento de sessao |
-| RF-04 | UC-04 | TC-009, TC-010, TC-011 | Evidencia de criacao de livro com MongoDB Testcontainers, validacao de dados e persistencia real | Integracao/persistencia real |
-| RF-05 | UC-05 | TC-012, TC-013 | Evidencia de listagem de livros do usuario e estado vazio | Caixa preta, comportamento observavel |
-| RF-06 | UC-06 | TC-014, TC-015, TC-016 | Evidencia de atualizacao de livro proprio, livro inexistente e regra de autorizacao | Regressao/regra de negocio |
-| RF-07 | UC-07 | TC-017, TC-018 | Evidencia de exclusao confirmada e cancelamento da exclusao | Fluxo alternativo |
-| RF-08 | UC-04, UC-05, UC-06, UC-07 | TC-012, TC-019, TC-020, TC-021 | Evidencia de listagem isolada por usuario, acesso negado, isolamento entre usuarios e bloqueio de operacoes indevidas | Seguranca/nao conformidade evitada |
-| RF-09 | UC-08 | TC-022, TC-023, TC-024, TC-025 | Evidencia de busca por ISBN com Open Library, replay VCR, ausencia de persistencia automatica, ISBN nao encontrado e falha externa controlada | Integracao HTTP externa/VCR |
+| RF-01 | UC-01 | TC-001, TC-002, TC-003 | Testes `AuthControllerTest`, fluxo frontend de cadastro/login e diagrama UC-01 em `docs/11-diagramas-sequencia.md` | Validacao, caso positivo, caso negativo |
+| RF-02 | UC-02 | TC-004, TC-005, TC-006 | Testes `AuthControllerTest`, evidencias `docs/evidencias/frontend/login*.png` e diagrama UC-02 | Caixa preta/autenticacao |
+| RF-03 | UC-02, UC-03 | TC-007, TC-008 | Testes `AuthControllerTest`, fluxo de sessao/logout no frontend e diagrama login/logout | Gerenciamento de sessao, CSRF |
+| RF-04 | UC-04 | TC-009, TC-010, TC-011 | Testes `BookControllerTest`, `BookRepositoryTest`, MongoDB Testcontainers e evidencias `books-created.png` | Integracao/persistencia real |
+| RF-05 | UC-05 | TC-012, TC-013 | Testes `BookControllerTest`, evidencias `dashboard-empty.png` e `books-created.png` | Caixa preta, comportamento observavel |
+| RF-06 | UC-06 | TC-014, TC-015, TC-016 | Testes `BookControllerTest`, regra em `BookService` e evidencia `books-edited.png` | Regressao/regra de negocio |
+| RF-07 | UC-07 | TC-017, TC-018 | Testes `BookControllerTest` e evidencia `book-deleted.png` | Fluxo alternativo |
+| RF-08 | UC-04, UC-05, UC-06, UC-07 | TC-012, TC-019, TC-020, TC-021 | Testes de autorizacao em `BookControllerTest`, filtro por `userId` e diagramas CRUD | Seguranca/nao conformidade evitada |
+| RF-09 | UC-08 | TC-022, TC-023, TC-024, TC-025 | Testes `OpenLibraryClientTest` e `BookImportControllerTest`, fixtures WireMock e evidencias `import-preview.png`, `import-created.png` | Integracao HTTP externa/VCR |
+
+## Evidencias Transversais
+
+| Evidencia | Local |
+| --- | --- |
+| Pipeline GitHub Actions | Aba Actions do repositorio, workflow `quality`. |
+| Cobertura JaCoCo | `target/site/jacoco/index.html` apos executar `mvn verify`; evidenciada tambem no SonarQube. |
+| SonarQube | `docs/evidencias/sonarqube/`, com Quality Gate Passed e cobertura acima de 80%. |
+| Frontend manual | `docs/evidencias/frontend/`, com prints de cadastro/login, CRUD, importacao e tela de qualidade. |
+| VCR/WireMock | `src/test/resources/wiremock/openlibrary/`. |
+| Testcontainers | `AbstractMongoIntegrationTest` e logs de execucao dos testes de integracao. |
+| Diagramas UML | `docs/11-diagramas-sequencia.md`. |
 
 ## Como Manter A RTM
 

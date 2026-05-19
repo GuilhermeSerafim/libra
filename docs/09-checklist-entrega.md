@@ -8,7 +8,7 @@
 | Codigo-fonte organizado | Pacotes, classes, nomes e responsabilidades coerentes com o dominio. |
 | README | Descricao do projeto, tecnologias, como executar, como testar e principais evidencias. |
 | RTM | Matriz ligando requisitos, casos de uso, casos de teste, evidencias e conceitos aplicados. |
-| Diagramas UML de sequencia | Diagramas de sequencia para os fluxos principais do sistema. |
+| Diagramas UML de sequencia | Diagramas de sequencia para os fluxos principais do sistema em `docs/11-diagramas-sequencia.md`. |
 | Cobertura minima de 80% | Relatorio JaCoCo mostrando cobertura minima exigida. |
 | GitHub Actions | Pipeline configurada e executando testes do backend, cobertura, lint e build do frontend. |
 | SonarQube | Analise estatica com Quality Gate Passed, 0 bugs, 0 vulnerabilidades, 0 code smells e evidencias em `docs/evidencias/sonarqube/`. |
@@ -25,6 +25,7 @@
 - Revisar o dashboard do SonarQube e os prints em `docs/evidencias/sonarqube/`.
 - Conferir README com comandos `mvn spring-boot:run`, `mvn verify`, atualizacao VCR, JaCoCo, SonarQube e GitHub Actions.
 - Conferir se a RTM esta atualizada com requisitos, testes e evidencias.
+- Conferir se `docs/11-diagramas-sequencia.md` abre corretamente no GitHub com os diagramas Mermaid.
 - Conferir evidencia da rotina semanal de atualizacao VCR.
 - Revisar o guia da prova oral e treinar respostas curtas.
 - Separar evidencias dos principais fluxos do sistema, como cadastro, listagem, edicao, exclusao, pre-visualizacao por ISBN e validacoes.
