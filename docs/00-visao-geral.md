@@ -29,7 +29,7 @@ O escopo funcional contempla cadastro de usuarios, autenticacao, gerenciamento d
 - Aplicacao Gerenciador de Biblioteca Pessoal.
 - README com instrucoes de execucao, testes e evidencias.
 - RTM com rastreabilidade dos requisitos funcionais.
-- Diagramas UML de sequencia para fluxos principais.
+- Diagramas UML de sequencia para fluxos principais em `docs/11-diagramas-sequencia.md`.
 - Pipeline GitHub Actions executando testes, cobertura e analise de qualidade.
 - Evidencias de cobertura minima de 80% com JaCoCo.
 - Evidencias de SonarQube.

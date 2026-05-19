@@ -50,13 +50,14 @@
 
 - docs/03-rtm.md.
 - docs/05-casos-de-teste.md.
+- docs/11-diagramas-sequencia.md.
 - Relatorio JaCoCo.
 - GitHub Actions.
 - SonarQube.
 - Logs ou testes com Testcontainers.
 - Fixture/resposta VCR e testes da Open Library API.
 - Evidencia da rotina semanal de atualizacao VCR.
-- Diagramas UML de sequencia.
+- Diagramas UML de sequencia em docs/11-diagramas-sequencia.md.
 - Secao "Exemplo De Bug Com Evidencia" em docs/08-gestao-bugs-e-evidencias.md como exemplo de registro e evidencia objetiva.
 
 ## Aplicacao na prova oral
