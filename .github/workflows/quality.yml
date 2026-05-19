@@ -20,7 +20,12 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Run tests and coverage
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Run backend tests and coverage
         run: mvn -B verify
       - name: Upload JaCoCo report
         if: always()
@@ -29,9 +34,36 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
           if-no-files-found: error
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Upload frontend build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          if-no-files-found: error
       - name: SonarQube analysis
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B sonar:sonar
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_HOST_URL" ]; then
+            echo "SonarQube secrets not configured; skipping analysis."
+            exit 0
+          fi
+
+          if [[ "$SONAR_HOST_URL" == http://localhost* || "$SONAR_HOST_URL" == http://127.0.0.1* ]]; then
+            echo "Local SonarQube URLs are not reachable from GitHub-hosted runners; skipping analysis."
+            exit 0
+          fi
+
+          mvn -B sonar:sonar -Dsonar.qualitygate.wait=true

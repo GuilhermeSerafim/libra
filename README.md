@@ -90,7 +90,7 @@ A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub A
 
 - Cobertura minima: 80% com JaCoCo.
 - Analise estatica: SonarQube.
-- CI: GitHub Actions.
+- CI: GitHub Actions executando backend (`mvn verify`) e frontend (`npm run lint` + `npm run build`).
 - Evidencias SonarQube: `docs/evidencias/sonarqube/`.
 - Evidencias do frontend: `docs/evidencias/frontend/`.
 

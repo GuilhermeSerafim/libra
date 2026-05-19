@@ -10,7 +10,7 @@
 | RTM | Matriz ligando requisitos, casos de uso, casos de teste, evidencias e conceitos aplicados. |
 | Diagramas UML de sequencia | Diagramas de sequencia para os fluxos principais do sistema. |
 | Cobertura minima de 80% | Relatorio JaCoCo mostrando cobertura minima exigida. |
-| GitHub Actions | Pipeline configurada e executando testes automaticamente. |
+| GitHub Actions | Pipeline configurada e executando testes do backend, cobertura, lint e build do frontend. |
 | SonarQube | Analise estatica com Quality Gate Passed, 0 bugs, 0 vulnerabilidades, 0 code smells e evidencias em `docs/evidencias/sonarqube/`. |
 | Testcontainers | Testes de integracao usando ambiente realista, como banco em container. |
 | VCR/WireMock para Open Library API | Testes da busca por ISBN executando em replay, sem depender de internet real no CI. |
@@ -19,6 +19,7 @@
 ## Checklist Antes Da Apresentacao
 
 - Rodar todos os testes localmente.
+- Rodar `npm run lint` e `npm run build` no frontend.
 - Conferir a ultima execucao da pipeline no GitHub Actions.
 - Abrir o relatorio de cobertura JaCoCo e confirmar a meta de 80%.
 - Revisar o dashboard do SonarQube e os prints em `docs/evidencias/sonarqube/`.
