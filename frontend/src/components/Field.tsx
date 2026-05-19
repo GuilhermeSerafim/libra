@@ -4,13 +4,21 @@ type FieldProps = {
   label: string;
   hint?: string;
   error?: string;
+  required?: boolean;
   children: ReactNode;
 };
 
-export function Field({ label, hint, error, children }: FieldProps) {
+export function Field({ label, hint, error, required = false, children }: FieldProps) {
   return (
     <label className="field">
-      <span className="field__label">{label}</span>
+      <span className="field__label">
+        {label}
+        {required ? (
+          <span className="field__required" aria-hidden="true">
+            *
+          </span>
+        ) : null}
+      </span>
       {children}
       {hint ? <span className="field__hint">{hint}</span> : null}
       {error ? (

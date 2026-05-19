@@ -146,7 +146,7 @@ export function BookForm({ book, onSubmit, onCancel }: BookFormProps) {
 
       <form className="book-form" onSubmit={handleSubmit}>
         <div className="book-form__grid">
-          <Field label="Titulo" error={errors.title}>
+          <Field label="Titulo" error={errors.title} required>
             <TextInput
               value={form.title}
               onChange={(event) => updateField('title', event.target.value)}
@@ -155,7 +155,7 @@ export function BookForm({ book, onSubmit, onCancel }: BookFormProps) {
             />
           </Field>
 
-          <Field label="Autores" hint="Separe por virgula" error={errors.authors}>
+          <Field label="Autores" hint="Separe por virgula" error={errors.authors} required>
             <TextInput
               value={form.authors}
               onChange={(event) => updateField('authors', event.target.value)}

@@ -203,6 +203,11 @@ a {
   color: #334155;
 }
 
+.field__required {
+  margin-left: 4px;
+  color: var(--color-danger);
+}
+
 .field__hint,
 .field__error {
   font-size: 0.82rem;
