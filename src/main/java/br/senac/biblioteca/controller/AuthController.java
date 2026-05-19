@@ -9,10 +9,12 @@ import br.senac.biblioteca.service.AuthService;
 import br.senac.biblioteca.service.CurrentUserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,10 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
     private final CurrentUserService currentUserService;
+    private final CsrfTokenRepository csrfTokenRepository;
 
-    public AuthController(AuthService authService, CurrentUserService currentUserService) {
+    public AuthController(AuthService authService, CurrentUserService currentUserService, CsrfTokenRepository csrfTokenRepository) {
         this.authService = authService;
         this.currentUserService = currentUserService;
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @PostMapping("/register")
@@ -43,7 +47,8 @@ public class AuthController {
     }
 
     @GetMapping("/csrf")
-    public CsrfTokenResponse csrf(@Parameter(hidden = true) CsrfToken csrfToken) {
+    public CsrfTokenResponse csrf(@Parameter(hidden = true) CsrfToken csrfToken, HttpServletRequest request, HttpServletResponse response) {
+        csrfTokenRepository.saveToken(csrfToken, request, response);
         return new CsrfTokenResponse(csrfToken.getHeaderName(), csrfToken.getParameterName(), csrfToken.getToken());
     }
 

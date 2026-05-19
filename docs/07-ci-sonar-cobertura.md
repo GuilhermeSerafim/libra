@@ -46,7 +46,7 @@ jobs:
         with:
           name: jacoco-report
           path: target/site/jacoco/
-          if-no-files-found: error
+          if-no-files-found: warn
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
@@ -57,7 +57,6 @@ jobs:
         working-directory: frontend
         run: npm run build
       - name: Upload frontend build
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
