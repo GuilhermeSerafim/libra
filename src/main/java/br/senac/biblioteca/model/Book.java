@@ -30,27 +30,7 @@ public class Book {
     private Instant updatedAt;
 
     public Book() {
-    }
-
-    public Book(String id, String userId, String title, List<String> authors, String isbn, String publisher,
-                String publishDate, Integer pageCount, String coverUrl, BookStatus status, Integer rating,
-                String notes, List<String> tags, MetadataSource metadataSource, Instant createdAt, Instant updatedAt) {
-        this.id = id;
-        this.userId = userId;
-        this.title = title;
-        this.authors = authors == null ? new ArrayList<>() : new ArrayList<>(authors);
-        this.isbn = isbn;
-        this.publisher = publisher;
-        this.publishDate = publishDate;
-        this.pageCount = pageCount;
-        this.coverUrl = coverUrl;
-        this.status = status;
-        this.rating = rating;
-        this.notes = notes;
-        this.tags = tags == null ? new ArrayList<>() : new ArrayList<>(tags);
-        this.metadataSource = metadataSource;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        // Required by Spring Data MongoDB to instantiate documents when reading from the database.
     }
 
     public String getId() { return id; }

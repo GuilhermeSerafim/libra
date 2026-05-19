@@ -24,16 +24,31 @@ class BookRepositoryTest extends AbstractMongoIntegrationTest {
 
     @Test
     void keepsBooksIsolatedByUserId() {
-        Book own = new Book(null, "user-1", "Clean Code", List.of("Robert C. Martin"), "9780132350884",
-                "Prentice Hall", "July 2008", 431, null, BookStatus.TO_READ, null,
-                "Study reference", List.of("quality"), MetadataSource.MANUAL, Instant.now(), Instant.now());
-        Book other = new Book(null, "user-2", "Refactoring", List.of("Martin Fowler"), "9780201485677",
-                "Addison-Wesley", "1999", 431, null, BookStatus.READING, null,
-                null, List.of("design"), MetadataSource.MANUAL, Instant.now(), Instant.now());
+        Book own = bookForUser("user-1", "Clean Code");
+        Book other = bookForUser("user-2", "Refactoring");
         bookRepository.saveAll(List.of(own, other));
 
         assertThat(bookRepository.findByUserId("user-1")).extracting(Book::getTitle).containsExactly("Clean Code");
         assertThat(bookRepository.findByIdAndUserId(own.getId(), "user-1")).isPresent();
         assertThat(bookRepository.findByIdAndUserId(other.getId(), "user-1")).isEmpty();
+    }
+
+    private static Book bookForUser(String userId, String title) {
+        Instant now = Instant.now();
+        Book book = new Book();
+        book.setUserId(userId);
+        book.setTitle(title);
+        book.setAuthors(List.of("Author"));
+        book.setIsbn("9780132350884");
+        book.setPublisher("Publisher");
+        book.setPublishDate("2008");
+        book.setPageCount(431);
+        book.setStatus(BookStatus.TO_READ);
+        book.setNotes("Study reference");
+        book.setTags(List.of("quality"));
+        book.setMetadataSource(MetadataSource.MANUAL);
+        book.setCreatedAt(now);
+        book.setUpdatedAt(now);
+        return book;
     }
 }

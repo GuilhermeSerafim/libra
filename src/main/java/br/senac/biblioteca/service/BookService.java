@@ -2,6 +2,7 @@ package br.senac.biblioteca.service;
 
 import br.senac.biblioteca.dto.request.BookCreateRequest;
 import br.senac.biblioteca.dto.request.BookUpdateRequest;
+import br.senac.biblioteca.dto.request.BookWriteRequest;
 import br.senac.biblioteca.dto.response.BookResponse;
 import br.senac.biblioteca.exception.NotFoundException;
 import br.senac.biblioteca.model.Book;
@@ -28,10 +29,11 @@ public class BookService {
 
     public BookResponse create(User user, BookCreateRequest request) {
         Instant now = Instant.now();
-        Book book = new Book(null, user.getId(), request.title(), request.authors(), request.isbn(), request.publisher(),
-                request.publishDate(), request.pageCount(), request.coverUrl(),
-                request.status() == null ? BookStatus.TO_READ : request.status(), request.rating(), request.notes(),
-                request.tags(), request.metadataSource() == null ? MetadataSource.MANUAL : request.metadataSource(), now, now);
+        Book book = new Book();
+        book.setUserId(user.getId());
+        applyRequest(book, request, MetadataSource.MANUAL);
+        book.setCreatedAt(now);
+        book.setUpdatedAt(now);
         return BookMapper.toResponse(bookRepository.save(book));
     }
 
@@ -41,6 +43,12 @@ public class BookService {
 
     public BookResponse update(User user, String id, BookUpdateRequest request) {
         Book book = findOwnBook(user, id);
+        applyRequest(book, request, book.getMetadataSource());
+        book.setUpdatedAt(Instant.now());
+        return BookMapper.toResponse(bookRepository.save(book));
+    }
+
+    private void applyRequest(Book book, BookWriteRequest request, MetadataSource fallbackMetadataSource) {
         book.setTitle(request.title());
         book.setAuthors(request.authors());
         book.setIsbn(request.isbn());
@@ -52,9 +60,7 @@ public class BookService {
         book.setRating(request.rating());
         book.setNotes(request.notes());
         book.setTags(request.tags());
-        book.setMetadataSource(request.metadataSource() == null ? book.getMetadataSource() : request.metadataSource());
-        book.setUpdatedAt(Instant.now());
-        return BookMapper.toResponse(bookRepository.save(book));
+        book.setMetadataSource(request.metadataSource() == null ? fallbackMetadataSource : request.metadataSource());
     }
 
     public void delete(User user, String id) {

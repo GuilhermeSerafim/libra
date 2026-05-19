@@ -8,7 +8,7 @@ No Gerenciador de Biblioteca Pessoal, essa estrategia ajuda a demonstrar que a e
 
 ## Pipeline Esperado
 
-Pipeline Java/Maven esperado no GitHub Actions:
+Pipeline de qualidade esperado no GitHub Actions:
 
 ```yaml
 name: quality
@@ -33,7 +33,12 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Run tests and coverage
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Run backend tests and coverage
         run: mvn -B verify
       - name: Upload JaCoCo report
         if: always()
@@ -41,16 +46,46 @@ jobs:
         with:
           name: jacoco-report
           path: target/site/jacoco/
+          if-no-files-found: warn
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Upload frontend build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
           if-no-files-found: error
       - name: SonarQube analysis
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B sonar:sonar
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_HOST_URL" ]; then
+            echo "SonarQube secrets not configured; skipping analysis."
+            exit 0
+          fi
+
+          if [[ "$SONAR_HOST_URL" == http://localhost* || "$SONAR_HOST_URL" == http://127.0.0.1* ]]; then
+            echo "Local SonarQube URLs are not reachable from GitHub-hosted runners; skipping analysis."
+            exit 0
+          fi
+
+          mvn -B sonar:sonar -Dsonar.qualitygate.wait=true
 ```
 
-Esse pipeline faz checkout do codigo, instala Java 21, usa cache do Maven, executa `mvn -B verify`, publica o relatorio de cobertura como artefato mesmo quando a execucao falha e depois roda a analise SonarQube com `mvn -B sonar:sonar`. O token e a URL do SonarQube devem ficar em secrets do GitHub Actions, como `SONAR_TOKEN` e `SONAR_HOST_URL`, nunca no repositorio. Tambem podem ser necessarias configuracoes como chave do projeto e URL do servidor no `pom.xml` ou nas propriedades do Maven. Os testes da Open Library devem rodar com VCR em Java usando WireMock em modo replay, sem depender de internet real durante o CI normal.
+Esse pipeline faz checkout do codigo, instala Java 21 e Node 22, usa cache do Maven e do npm, executa `mvn -B verify`, publica o relatorio de cobertura JaCoCo, instala as dependencias do frontend, executa `npm run lint`, executa `npm run build` e publica o build do frontend como artefato. Assim, o CI valida tanto o backend quanto a interface React antes da entrega.
+
+A analise SonarQube tambem esta prevista no workflow, mas depende de um servidor acessivel pelo GitHub Actions. Como o SonarQube da entrega foi configurado localmente em Docker, uma URL `localhost` nao pode ser acessada por um runner hospedado no GitHub. Por isso, o workflow so envia a analise quando `SONAR_TOKEN` e `SONAR_HOST_URL` apontarem para um servidor real/acessivel; caso contrario, a etapa informa o motivo e nao derruba o CI. As evidencias do SonarQube local ficam registradas em `docs/evidencias/sonarqube/`.
+
+O token e a URL do SonarQube devem ficar em secrets do GitHub Actions, como `SONAR_TOKEN` e `SONAR_HOST_URL`, nunca no repositorio. Tambem podem ser necessarias configuracoes como chave do projeto e URL do servidor no `pom.xml` ou nas propriedades do Maven. Os testes da Open Library devem rodar com VCR em Java usando WireMock em modo replay, sem depender de internet real durante o CI normal.
 
 ## Rotina Semanal De Atualizacao VCR
 
@@ -112,10 +147,10 @@ O Quality Gate no pull request deve impedir que codigo novo entre no projeto com
 
 O Quality Gate nao substitui revisao humana, mas cria uma barreira automatica para problemas objetivos e repetitivos.
 
-A aplicacao efetiva do Quality Gate depende da configuracao do projeto no SonarQube e da decoracao do pull request. Portanto, o pipeline executa os testes, gera cobertura e envia a analise; a configuracao do SonarQube define as regras, interpreta o relatorio JaCoCo e integra o resultado ao PR para permitir ou bloquear a mudanca conforme os criterios definidos.
+A aplicacao efetiva do Quality Gate depende da configuracao do projeto no SonarQube, da decoracao do pull request e de um servidor SonarQube acessivel ao runner. Quando o SonarQube esta local, o CI continua validando testes, cobertura e build do frontend, enquanto a evidencia local do dashboard demonstra a analise estatica exigida na entrega. Quando houver um servidor SonarQube acessivel, o mesmo workflow envia a analise e espera o Quality Gate com `-Dsonar.qualitygate.wait=true`.
 
 ## Aplicacao na prova oral
 
 Resposta sugerida:
 
-"O CI leva a qualidade da maquina local para o repositorio. A cada push ou pull request, o GitHub Actions executa `mvn -B verify`, roda os testes, gera cobertura com JaCoCo e envia a analise com `sonar:sonar` usando secrets como `SONAR_TOKEN` e `SONAR_HOST_URL`. A meta minima obrigatoria e 80%, com relatorios HTML e XML. O SonarQube complementa os testes analisando bugs, code smells, duplicacao e cobertura. Para Open Library, o fluxo normal usa VCR em Java com WireMock em replay, entao o CI nao depende da internet real. Para evitar cassete eterno, existe uma rotina semanal que chama a Open Library real, normaliza a resposta, atualiza a fixture VCR, roda os testes em replay e commita a fixture se houver mudanca. No pull request, o Quality Gate depende da configuracao do projeto SonarQube e da decoracao de PR para indicar se o codigo novo esta saudavel antes de entrar na branch principal."
+"O CI leva a qualidade da maquina local para o repositorio. A cada push ou pull request, o GitHub Actions executa `mvn -B verify`, roda os testes do backend, gera cobertura com JaCoCo, valida o frontend com `npm run lint` e `npm run build` e guarda relatorios como artefatos. A meta minima obrigatoria e 80%, com relatorios HTML e XML. O SonarQube complementa os testes analisando bugs, code smells, duplicacao e cobertura. Como o SonarQube desta entrega esta local em Docker, o GitHub Actions so consegue enviar analise se houver uma URL SonarQube acessivel pela internet ou por runner proprio; por isso mantemos as evidencias locais em `docs/evidencias/sonarqube/`. Para Open Library, o fluxo normal usa VCR em Java com WireMock em replay, entao o CI nao depende da internet real. Para evitar cassete eterno, existe uma rotina semanal que chama a Open Library real, normaliza a resposta, atualiza a fixture VCR, roda os testes em replay e commita a fixture se houver mudanca."

@@ -3,21 +3,24 @@ package br.senac.biblioteca.controller;
 import br.senac.biblioteca.AbstractMongoIntegrationTest;
 import br.senac.biblioteca.repository.BookRepository;
 import br.senac.biblioteca.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @AutoConfigureMockMvc
 class BookControllerTest extends AbstractMongoIntegrationTest {
@@ -36,13 +39,29 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
         userRepository.deleteAll();
     }
 
+    private Cookie issueXsrfCookie() throws Exception {
+        var csrfResponse = mockMvc.perform(get("/api/auth/csrf"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Cookie xsrfCookie = csrfResponse.getResponse().getCookie("XSRF-TOKEN");
+        assertNotNull(xsrfCookie);
+        return xsrfCookie;
+    }
+
+    private ResultActions performWithRealCsrf(MockHttpServletRequestBuilder requestBuilder) throws Exception {
+        Cookie xsrfCookie = issueXsrfCookie();
+        return mockMvc.perform(requestBuilder
+                .cookie(xsrfCookie)
+                .header("X-XSRF-TOKEN", xsrfCookie.getValue()));
+    }
+
     @Test
     void createsListsUpdatesAndDeletesOwnBook() throws Exception {
         MockHttpSession session = login("ada@example.com");
 
-        String created = mockMvc.perform(post("/api/books")
+        String created = performWithRealCsrf(post("/api/books")
                         .session(session)
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Clean Code","authors":["Robert C. Martin"],"isbn":"9780132350884","status":"READING","rating":5,"tags":["quality"]}
@@ -59,9 +78,8 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(id));
 
-        mockMvc.perform(put("/api/books/" + id)
+        performWithRealCsrf(put("/api/books/" + id)
                         .session(session)
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Clean Code Updated","authors":["Robert C. Martin"],"isbn":"9780132350884","status":"READ","rating":5,"tags":["quality","done"]}
@@ -70,7 +88,7 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
                 .andExpect(jsonPath("$.title").value("Clean Code Updated"))
                 .andExpect(jsonPath("$.status").value("READ"));
 
-        mockMvc.perform(delete("/api/books/" + id).session(session).with(csrf()))
+        performWithRealCsrf(delete("/api/books/" + id).session(session))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/api/books/" + id).session(session))
@@ -82,9 +100,8 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
         MockHttpSession owner = login("owner@example.com");
         MockHttpSession stranger = login("stranger@example.com");
 
-        String created = mockMvc.perform(post("/api/books")
+        String created = performWithRealCsrf(post("/api/books")
                         .session(owner)
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Private Book","status":"TO_READ"}
@@ -98,14 +115,13 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
         mockMvc.perform(get("/api/books/" + id).session(stranger))
                 .andExpect(status().isNotFound());
 
-        mockMvc.perform(delete("/api/books/" + id).session(stranger).with(csrf()))
+        performWithRealCsrf(delete("/api/books/" + id).session(stranger))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void rejectsBookCreationWithoutSession() throws Exception {
-        mockMvc.perform(post("/api/books")
-                        .with(csrf())
+        performWithRealCsrf(post("/api/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Clean Code","status":"READING"}
@@ -130,9 +146,8 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
     void rejectsInvalidBookStatusAsBadRequest() throws Exception {
         MockHttpSession session = login("ada@example.com");
 
-        mockMvc.perform(post("/api/books")
+        performWithRealCsrf(post("/api/books")
                         .session(session)
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Bad","status":"DONE"}
@@ -145,9 +160,8 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
     void rejectsInvalidPageCount() throws Exception {
         MockHttpSession session = login("ada@example.com");
 
-        mockMvc.perform(post("/api/books")
+        performWithRealCsrf(post("/api/books")
                         .session(session)
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Bad Pages","pageCount":0}
@@ -160,9 +174,8 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
     void persistsOpenLibraryMetadataSourceWhenProvided() throws Exception {
         MockHttpSession session = login("ada@example.com");
 
-        mockMvc.perform(post("/api/books")
+        performWithRealCsrf(post("/api/books")
                         .session(session)
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Imported","metadataSource":"OPEN_LIBRARY"}
@@ -172,16 +185,14 @@ class BookControllerTest extends AbstractMongoIntegrationTest {
     }
 
     private MockHttpSession login(String email) throws Exception {
-        mockMvc.perform(post("/api/auth/register")
-                        .with(csrf())
+        performWithRealCsrf(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"name":"User","email":"%s","password":"StrongPass123"}
                                 """.formatted(email)))
                 .andExpect(status().isCreated());
 
-        return (MockHttpSession) mockMvc.perform(post("/api/auth/login")
-                        .with(csrf())
+        return (MockHttpSession) performWithRealCsrf(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"email":"%s","password":"StrongPass123"}

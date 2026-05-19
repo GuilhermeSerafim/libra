@@ -1,6 +1,7 @@
 # Gerenciador de Biblioteca Pessoal
 
 Backend REST API em Spring Boot para organizar livros de usuarios autenticados.
+Frontend SPA em React + Vite para consumir a API durante a demonstracao.
 
 ## Stack
 
@@ -13,6 +14,7 @@ Backend REST API em Spring Boot para organizar livros de usuarios autenticados.
 - JaCoCo
 - SonarQube
 - GitHub Actions
+- React + Vite + TypeScript
 
 ## Funcionalidades
 
@@ -43,6 +45,22 @@ Se a porta `8080` estiver ocupada, execute em outra porta:
 mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
 ```
 
+## Executar Frontend
+
+Com o backend rodando em `8081`, abra outro terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+O frontend fica em:
+
+- `http://localhost:5173`
+
+O Vite encaminha chamadas `/api` para `http://localhost:8081`, preservando cookies de sessao e o fluxo CSRF do Spring Security.
+
 ## Swagger UI
 
 Com a aplicacao rodando, a documentacao interativa fica em:
@@ -72,7 +90,18 @@ A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub A
 
 - Cobertura minima: 80% com JaCoCo.
 - Analise estatica: SonarQube.
-- CI: GitHub Actions.
+- CI: GitHub Actions executando backend (`mvn verify`) e frontend (`npm run lint` + `npm run build`).
+- Evidencias SonarQube: `docs/evidencias/sonarqube/`.
+- Evidencias do frontend: `docs/evidencias/frontend/`.
+
+Ultima analise SonarQube registrada:
+
+- Quality Gate: Passed.
+- Coverage on New Code: 100%.
+- Overall Coverage: 90.1%.
+- Duplications on New Code: 0.0%.
+- Bugs, vulnerabilidades e code smells: 0.
+- Testes importados: 32.
 
 ## Endpoints
 

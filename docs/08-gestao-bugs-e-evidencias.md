@@ -60,7 +60,8 @@ Na prova oral, a explicacao principal e: severidade responde "qual e o impacto?"
 
 - Relatorio JaCoCo demonstrando cobertura de testes.
 - Execucao do GitHub Actions demonstrando pipeline automatizada.
-- Dashboard do SonarQube com metricas de qualidade.
+- Dashboard do SonarQube com Quality Gate, bugs, vulnerabilidades, code smells, cobertura e duplicacao.
+- Prints do SonarQube em `docs/evidencias/sonarqube/`, incluindo Quality Gate Passed.
 - Prints das telas e dos fluxos principais funcionando.
 - Logs e execucoes de testes com Testcontainers.
 - RTM demonstrando rastreabilidade entre requisitos, casos de teste e evidencias.

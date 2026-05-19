@@ -21,4 +21,4 @@ public record BookCreateRequest(
         String notes,
         List<String> tags,
         MetadataSource metadataSource
-) {}
+) implements BookWriteRequest {}
