@@ -73,6 +73,16 @@ A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub A
 - Cobertura minima: 80% com JaCoCo.
 - Analise estatica: SonarQube.
 - CI: GitHub Actions.
+- Evidencias SonarQube: `docs/evidencias/sonarqube/`.
+
+Ultima analise SonarQube registrada:
+
+- Quality Gate: Passed.
+- Coverage on New Code: 100%.
+- Overall Coverage: 90.1%.
+- Duplications on New Code: 0.0%.
+- Bugs, vulnerabilidades e code smells: 0.
+- Testes importados: 32.
 
 ## Endpoints
 
