@@ -1,108 +1,81 @@
-# Gerenciador de Biblioteca Pessoal
+# libra
 
-Backend REST API em Spring Boot para organizar livros de usuarios autenticados.
-Frontend SPA em React + Vite para consumir a API durante a demonstracao.
+Projeto acadêmico full stack para organizar os livros de usuários autenticados. Oferece cadastro e sessão, CRUD de livros e consulta de metadados por ISBN com a Open Library. O foco técnico é controle de acesso por usuário, integração entre SPA e cookies/CSRF, tratamento de falhas externas e testes automatizados com Testcontainers e WireMock.
 
-## Stack
+## Demonstração e imagens
 
-- Java 21
-- Spring Boot
-- Spring Security com sessao/cookie
-- MongoDB
-- Testcontainers
-- VCR em Java com WireMock
-- JaCoCo
-- SonarQube
-- GitHub Actions
-- React + Vite + TypeScript
+Capturas existentes: [livros cadastrados](docs/evidencias/frontend/books-created.png), [prévia de importação](docs/evidencias/frontend/import-preview.png). Estes arquivos já pertencem ao projeto.
 
-## Funcionalidades
+## Minha contribuição e autoria
 
-- Cadastro de usuario
-- Login, logout e sessao
-- CRUD de livros do usuario autenticado
-- Restricao de acesso por usuario
-- Pre-visualizacao de metadados por ISBN com Open Library
+Este repositório reúne minha implementação e documentação de um projeto acadêmico. As decisões de controle de acesso, integração e testes podem ser acompanhadas nos serviços, testes e documentos versionados; os indicadores históricos não substituem uma execução nova.
 
-## Pre-requisitos
+## Arquitetura e implementação
 
-- Java 21
-- Maven
-- Docker em execucao para testes com Testcontainers
-- MongoDB local ou `MONGODB_URI` para executar a aplicacao
+O backend separa controllers, DTOs, services, repositories e clientes externos. Operações sobre livros consultam o proprietário autenticado junto com o identificador do registro. A SPA usa o proxy `/api` do Vite para enviar cookies e token CSRF. A Open Library fica isolada em um cliente com timeout e tratamento de falhas.
 
-## Executar Localmente
+Veja [BookService](src/main/java/br/senac/biblioteca/service/BookService.java), [testes de autorização](src/test/java/br/senac/biblioteca/controller/BookControllerTest.java) e [testes do cliente externo](src/test/java/br/senac/biblioteca/client/OpenLibraryClientTest.java).
 
-Execute:
+## Instalação e configuração
 
-```bash
-mvn spring-boot:run
-```
+Java 21, Maven, MongoDB e Node 22. Os testes de integração usam Docker com Testcontainers. Configure `MONGODB_URI` para uma instância de desenvolvimento; `OPEN_LIBRARY_BASE_URL` permite configurar o serviço de consulta de ISBN.
 
-Se a porta `8080` estiver ocupada, execute em outra porta:
+Terminal 1, na raiz do repositório, com MongoDB disponível:
 
-```bash
+```text
 mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
 ```
 
-## Executar Frontend
+Terminal 2, começando na raiz do repositório:
 
-Com o backend rodando em `8081`, abra outro terminal:
-
-```bash
+```text
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
-O frontend fica em:
+## Testes e verificações
 
-- `http://localhost:5173`
+Os comandos abaixo documentam a suíte existente; não representam uma execução nova nem um resultado de aprovação.
 
-O Vite encaminha chamadas `/api` para `http://localhost:8081`, preservando cookies de sessao e o fluxo CSRF do Spring Security.
+Em um novo terminal, na raiz do repositório, com Docker em execução:
+
+```text
+mvn verify
+```
+
+Testes e build do frontend, começando novamente na raiz:
+
+```text
+cd frontend
+npm test
+npm run lint
+npm run build
+```
+
+`mvn verify` requer Docker para o MongoDB de teste. O backend em desenvolvimento deve usar a porta 8081 para coincidir com o proxy do frontend.
+
+## Limites atuais
+
+- Métricas de cobertura/Sonar registradas nos documentos são evidências históricas, não promessa de estado atual.
+- A suíte de frontend existente não é uma suíte completa de navegação ponta a ponta.
+- O workflow quality executa lint/build frontend, mas não npm test; a atualização automática VCR está desativada por inatividade.
+
+<details>
+<summary>Referência de uso e documentação complementar</summary>
+
+## Acessos locais
+
+O frontend fica em `http://localhost:5173`. O proxy do Vite encaminha `/api` para `http://localhost:8081`, preservando os cookies de sessão e o fluxo CSRF.
 
 ## Swagger UI
 
 Com a aplicacao rodando, a documentacao interativa fica em:
 
-- `http://localhost:8080/swagger-ui/index.html`
-- `http://localhost:8080/v3/api-docs`
+- `http://localhost:8081/swagger-ui/index.html`
+- `http://localhost:8081/v3/api-docs`
 
 Os endpoints do Swagger ficam publicos para facilitar a avaliacao e a apresentacao. As rotas da API continuam protegidas por sessao e CSRF conforme a regra abaixo.
-
-## Testes
-
-```bash
-mvn verify
-```
-
-Os testes de persistencia usam MongoDB via Testcontainers. Os testes da Open Library usam VCR em Java com WireMock em modo replay, sem chamar a internet no fluxo normal.
-
-## Atualizar VCR Da Open Library
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/update-openlibrary-vcr.ps1
-```
-
-A atualizacao online da fixture/resposta VCR roda uma vez por semana no GitHub Actions para evitar cassete eterno.
-
-## Qualidade
-
-- Cobertura minima: 80% com JaCoCo.
-- Analise estatica: SonarQube.
-- CI: GitHub Actions executando backend (`mvn verify`) e frontend (`npm run lint` + `npm run build`).
-- Evidencias SonarQube: `docs/evidencias/sonarqube/`.
-- Evidencias do frontend: `docs/evidencias/frontend/`.
-- Diagramas UML de sequencia: `docs/11-diagramas-sequencia.md`.
-
-Ultima analise SonarQube registrada:
-
-- Quality Gate: Passed.
-- Coverage on New Code: 100%.
-- Overall Coverage: 90.1%.
-- Duplications on New Code: 0.0%.
-- Bugs, vulnerabilidades e code smells: 0.
-- Testes importados: 32.
 
 ## Endpoints
 
@@ -122,19 +95,27 @@ Ultima analise SonarQube registrada:
 
 CSRF esta habilitado para chamadas inseguras. Antes de enviar POST, PUT ou DELETE, incluindo `/api/auth/register`, `/api/auth/login` e `/api/auth/logout`, chame `GET /api/auth/csrf`, obtenha o cookie `XSRF-TOKEN` e envie o valor no header `X-XSRF-TOKEN`.
 
+## Atualizar VCR Da Open Library
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/update-openlibrary-vcr.ps1
+```
+
 ## Documentacao Da Entrega
 
 | Documento | Finalidade |
 | --- | --- |
-| `docs/00-visao-geral.md` | Escopo, stack oficial, premissas e entregaveis. |
-| `docs/01-requisitos.md` | Requisitos funcionais, nao funcionais e restricoes tecnicas. |
-| `docs/02-casos-de-uso.md` | Fluxos principais, alternativos e excecoes. |
-| `docs/03-rtm.md` | Rastreabilidade entre RFs, UCs, TCs, evidencias e conceitos. |
-| `docs/04-plano-de-testes.md` | Estrategia, criterios, riscos e metricas de teste. |
-| `docs/05-casos-de-teste.md` | Catalogo TC-001 a TC-025. |
-| `docs/06-estrategia-automacao.md` | Testcontainers, VCR/WireMock, regressao e camadas automatizadas. |
-| `docs/07-ci-sonar-cobertura.md` | GitHub Actions, JaCoCo, SonarQube e Quality Gate. |
-| `docs/08-gestao-bugs-e-evidencias.md` | Registro de bugs, severidade, prioridade e evidencias objetivas. |
-| `docs/09-checklist-entrega.md` | Checklist final antes da apresentacao. |
-| `docs/10-guia-prova-oral.md` | Roteiro de defesa e perguntas provaveis. |
-| `docs/11-diagramas-sequencia.md` | Diagramas UML de sequencia dos fluxos principais. |
+| [docs/00-visao-geral.md](docs/00-visao-geral.md) | Escopo, stack oficial, premissas e entregaveis. |
+| [docs/01-requisitos.md](docs/01-requisitos.md) | Requisitos funcionais, nao funcionais e restricoes tecnicas. |
+| [docs/02-casos-de-uso.md](docs/02-casos-de-uso.md) | Fluxos principais, alternativos e excecoes. |
+| [docs/03-rtm.md](docs/03-rtm.md) | Rastreabilidade entre RFs, UCs, TCs, evidencias e conceitos. |
+| [docs/04-plano-de-testes.md](docs/04-plano-de-testes.md) | Estrategia, criterios, riscos e metricas de teste. |
+| [docs/05-casos-de-teste.md](docs/05-casos-de-teste.md) | Catalogo TC-001 a TC-025. |
+| [docs/06-estrategia-automacao.md](docs/06-estrategia-automacao.md) | Testcontainers, VCR/WireMock, regressao e camadas automatizadas. |
+| [docs/07-ci-sonar-cobertura.md](docs/07-ci-sonar-cobertura.md) | GitHub Actions, JaCoCo, SonarQube e Quality Gate. |
+| [docs/08-gestao-bugs-e-evidencias.md](docs/08-gestao-bugs-e-evidencias.md) | Registro de bugs, severidade, prioridade e evidencias objetivas. |
+| [docs/09-checklist-entrega.md](docs/09-checklist-entrega.md) | Checklist final antes da apresentacao. |
+| [docs/10-guia-prova-oral.md](docs/10-guia-prova-oral.md) | Roteiro de defesa e perguntas provaveis. |
+| [docs/11-diagramas-sequencia.md](docs/11-diagramas-sequencia.md) | Diagramas UML de sequencia dos fluxos principais. |
+
+</details>
